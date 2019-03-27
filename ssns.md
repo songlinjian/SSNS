@@ -1,0 +1,61 @@
+# SSNS: Special Stealth Name Server against DDoS attack
+
+## Introduction 
+
+Denial of service attacks are very difficult to avoid. Any public service can be a potential target of such attack. In the case of DNS, for a long time it played roles of both collaborator and victim of DDoS attack. As a victim, such attack in history caused huge outage and damage on Internet services relying upon DNS[[1]](https://en.wikipedia.org/wiki/2016_Dyn_cyberattack). 
+
+More specifically, the name server of a zone is usually the target of the DDoS attack, because name server is placed in a key position responsible for receiving queries and replying response with authoritative answer. If all name servers are out of service, the legitimate queries will got no response.
+
+In this draft, a new mitigation solution was proposed with a special stealth name server (SSNS). The idea is simple that SSNS is designed to be hidden from attackers traffic but known to legitimate queries. Resolver is expected to play an active role to support this function in a way of asking the delegated name servers if they can respond, or asking the SSNS if all delegated name server fails.
+
+## Problem Statement
+
+Before the discussion of the DDoS-mitigation approach in-depth, it is better to define the attacking model more clearly. There are two typical potential DDoS-attack cases in the scope of our discussion. 
+
+* Case 1: DDoS attack launched by DNS-based amplifier which generates large response to targeted name server to exhaust system capacity and network bandwidth   
+* Case 2: Bogus DNS queries sent directly to the targeted name server to exhaust the system's capacity and network bandwidth
+
+There is another potential way of using resolver to generate normal query as attacking traffic just as legitimate query do. But this scenario is not considered in this document for two reasons. Firstly the normal query are quite small. Secondly there are many mitigating approaches and reduce the potential of using resolver send normal query as attacking traffic, such as RRL(Response Rate Limiting) and NXDOMAIN in the Cache [RFC8198,RFC8020].
+
+Targeted the attacking cased listed above, it is proposed in this draft to use a special stealth or hidden name servers to hide their the name and the IP address from the attacker. It is called stealth or hidden, because they are slave servers which are not listed in an NS RR for the zone.
+
+## Brief Description of SSNS and Its Usage
+
+Normal steal name server defined in [RFC1996#section-2.1](https://tools.ietf.org/html/rfc1996#section-2.1) is usually used as a hidden master to distribute the zone to other slaves. The special stealth name server defined in this proposal are registered out of DNS Registry but a SSNS Registry, a new concept of Registry function. It has a property that SSNS is not public visible but only known and updated in real-time to the SSNS-aware Resolver which is also new and defined here. That special Resolver will send query to SSNS only if all delegated name server are out of service (timeout or SERVFAIL) in case of severe DDoS attack. It is shown in the figure 1 as a high-level digram of SSNS.
+
+                  +----------+
+                  |  SSNS    |
+                  | Registry |
+                  |          |
+                  +----+-----+
+                       |
+                       | SSNS info stream      +-----------+
+                       v                       | Delegated |
+                  +----+-----+ normal queries  |Name server|
+                  |SSNS-aware+---------------> +-----------+
+          +------>+ Resolver |
+        queries   |          +---------------> +-----------+
+                  +----------+  if all fail    |   SSNS    |
+                                               |           |
+                                               +-----------+
+
+Figure 1. A High-level Diagram of SSNS
+
+To make this happen and work cooperatively there are several proposed roles and issues to be considered.
+
+* Obviously the SSNS-aware Resolver plays an central roll to make SSNS happen and successful. Public DNS provider with capacity and credits can serve this role.
+* SSNS Registry is a new concept introduce in this draft. It is a registry interface only for SSNS purpose. It adds extra SSNS information to existing domain name. In the existing ICANN's registry/registrar model, registrar are more fit this role.
+* A function of SSNS update is needed between the SSNS registry and SSNS-aware Resolver. It can be implemented in various ways including low level sockets, or high level Web format. The author suggest a kind of RPZ-like mechanism is a better approach to implement this.
+
+As mentioned in previous section, the scenario in which the attacking traffic comes from resolvers are not the targeted problem. However, that author also find that SSNS has the potential to mitigate it as well. Because SSNS Registry can register far more than 13 name server which is a constraint for normal name server registration.
+
+## Security Consideration
+
+TBD
+
+## Reference
+
+[1] 2016 Dyn cyberattack: https://en.wikipedia.org/wiki/2016_Dyn_cyberattack
+[2]Response Rate Limiting:https://kb.isc.org/docs/aa-01148
+[3] Fujiwara, K., Kato, A., and W. Kumari, "Aggressive Use of DNSSEC-Validated Cache",RFC8198,<https://tools.ietf.org/html/rfc8198>
+[4] Bortzmeyer, S., "NXDOMAIN: There Really Is Nothing Underneath", RFC8020, <https://tools.ietf.org/html/rfc8020>
