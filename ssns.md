@@ -28,7 +28,7 @@ Taken case 1 and 2 in consideration, it is proposed in this draft to use a speci
 
 ## Brief Description of SSNS and Its Usage
 
-Normal steal name server defined in [RFC1996#section-2.1](https://tools.ietf.org/html/rfc1996#section-2.1) is usually used as a hidden master to distribute the zone to other slaves. The special stealth name server defined in this proposal are registered out of DNS Registry but a SSNS Registry, a new concept of Registry function. It has a property that SSNS is not public visible but only known and updated in real-time to the SSNS-aware Resolver which is also new and defined here. That special Resolver will send query to SSNS only if all delegated name server are out of service (timeout or SERVFAIL) in case of severe DDoS attack. It is shown in the figure 1 as a high-level digram of SSNS.
+Normal stealth name server defined in [RFC1996#section-2.1](https://tools.ietf.org/html/rfc1996#section-2.1) is usually used as a hidden master to distribute the zone to other slaves. The special stealth name server defined in this proposal are registered out of DNS Registry but a SSNS Registry, a new concept of Registry function. It has a property that SSNS is not public visible but only known and updated in real-time to the SSNS-aware Resolver which is also new and defined here. That special Resolver will send query to SSNS only if all delegated name server are out of service (timeout or SERVFAIL) in case of severe DDoS attack. It is shown in the figure 1 as a high-level digram of SSNS.
 
                   +----------+
                   |  SSNS    |
