@@ -1,3 +1,9 @@
+---
+title:   SSNS: Special Stealth Name Server against DDoS attack
+author: Davey Song
+mailto: songlinjian@gmail.com
+---
+
 # SSNS: Special Stealth Name Server against DDoS attack
 
 ## Introduction 
