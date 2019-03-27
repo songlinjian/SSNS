@@ -6,7 +6,7 @@ Denial of service attacks are very difficult to avoid. Any public service can be
 
 More specifically, the name server of a zone is usually the target of the DDoS attack, because name server is placed in a key position responsible for receiving queries and replying responses with authoritative answer. If all name servers are out of service, the legitimate queries will get no response.
 
-In this draft, a new mitigation solution was proposed with a newly defined special stealth name server (SSNS). The idea is simple that SSNS is designed to be hidden from attackers traffic but known to legitimate queries. Resolver is expected to play an active role to support this function in a way of asking the public delegated name servers if they can respond, otherwise asking the SSNS if all delegated name server fail.
+In this draft, a new DDoS-mitigation concept was proposed with a newly defined special stealth name server (SSNS). The idea is simple that SSNS is designed to be hidden from attackers traffic but known to legitimate queries. Resolver is expected to play an active role to support this function in a way of asking the public delegated name servers if they can respond, otherwise asking the SSNS if all delegated name server fail.
 
 ## Problem Statement
 
@@ -42,11 +42,12 @@ Normal steal name server defined in [RFC1996#section-2.1](https://tools.ietf.org
 
 Figure 1. A High-level Diagram of SSNS
 
-To make this happen and work cooperatively there are several proposed roles and issues to be considered.
+To make this happen and work cooperatively there are several proposed roles and functions to be considered.
 
-* Obviously the SSNS-aware Resolver plays an central roll to make SSNS happen and successful. Public DNS provider with capacity and credits can serve this role.
+* Obviously the SSNS-aware Resolver plays an central roll to make SSNS happen and successful. Public DNS provider with capacity and credits can serve this role. They have incentive to provider their user better performance to surive a DDoS attack.
 * SSNS Registry is a new concept introduce in this draft. It is a registry interface only for SSNS purpose. It adds extra SSNS information to existing domain name. In the existing ICANN's registry/registrar model, registrar are more fit this role.
 * A function of SSNS update is needed between the SSNS registry and SSNS-aware Resolver. It can be implemented in various ways including low level sockets, or high level Web format. The author suggest a kind of RPZ-like mechanism is a better approach to implement this.
+* To keep the SSNS secret, besides normal appoarches, some tracking function like "dig +trace" should be disabled on SSNS-aware Resolver. 
 
 As mentioned in previous section, the case 3 of attacking scenario is not the targeted problem. However, that author also find that SSNS has the potential to mitigate it as well. Because SSNS Registry can register far more than 13 name server which is a constraint for normal name server registration.
 
